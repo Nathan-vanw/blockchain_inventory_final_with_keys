@@ -15,6 +15,14 @@ harn = keys["HarnKeys"]
 IDs = harn["IDs"]
 Randoms = harn["Randoms"]
 
+# Simulated database of inventory records
+inventory_db = {
+    "Inventory_A": {"001": 10, "002": 12, "003": 14, "004": 16},
+    "Inventory_B": {"001": 8, "002": 9,  "003": 10, "004": 11},
+    "Inventory_C": {"001": 7, "002": 6,  "003": 5,  "004": 4},
+    "Inventory_D": {"001": 3, "002": 2,  "003": 1,  "004": 0}
+}
+
 # Helper Functions
 def generate_secret_key(ID, d, n):
     return pow(ID, d, n)
@@ -60,14 +68,9 @@ def verify_signature(s, e, n, ids, t, h):
 @app.route("/query_item", methods=["POST"])
 def query_item():
     item_id = request.json.get("item_id")
-    quantities = {
-        "Inventory_A": 12,
-        "Inventory_B": 18,
-        "Inventory_C": 0,
-        "Inventory_D": 30
-    }
-
+    quantities = {inv: inventory_db[inv].get(item_id, 0) for inv in inventory_db}
     total_quantity = sum(quantities.values())
+
     e_pkg = harn["PKG"]["e"]
     n_pkg = harn["PKG"]["n"]
     ids = list(IDs.values())
