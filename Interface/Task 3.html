@@ -3,74 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Task 3: Multi-Signature Query</title>
+  <title>Task 3 Multi-Signature Query</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f5f7fa;
-      padding: 40px;
-    }
-    .container {
-      background-color: #fff;
-      max-width: 800px;
-      margin: auto;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    h2 {
-      text-align: center;
-    }
-    input, button, select {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      font-size: 1em;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-    button {
-      background-color: #007bff;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-    pre, table {
-      background-color: #eef;
-      padding: 10px;
-      border-radius: 5px;
-      overflow-x: auto;
-      white-space: pre-wrap;
-    }
-    table {
-      width: 100%;
-      margin-top: 20px;
-      border-collapse: collapse;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 8px;
-      text-align: center;
-    }
-    th {
-      background-color: #ddd;
-    }
+    body { font-family: Arial, sans-serif; background: #f2f2f2; padding: 40px; }
+    .container { background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); max-width: 800px; margin: auto; }
+    h2 { text-align: center; }
+    select, button { width: 100%; padding: 10px; margin-top: 10px; font-size: 1em; }
+    table { width: 100%; margin-top: 20px; border-collapse: collapse; background: #eef; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    th { background: #ddd; }
+    pre { background: #eef; padding: 10px; border-radius: 5px; white-space: pre-wrap; }
   </style>
 </head>
 <body>
-
   <div class="container">
     <h2>🔐 Task 3 – Multi-Signature Query</h2>
     <label for="itemId">Select Item ID:</label>
     <select id="itemId">
+      <option value="001">001</option>
+      <option value="002">002</option>
+      <option value="003">003</option>
       <option value="004">004</option>
-      <option value="005">005</option>
-      <option value="006">006</option>
     </select>
-    <button onclick="simulateQuery()">Submit Query</button>
+    <button onclick="submitQuery()">Submit Query</button>
 
     <div id="output">
       <pre>Waiting for input...</pre>
@@ -78,7 +33,7 @@
   </div>
 
   <script>
-    async function simulateQuery() {
+    async function submitQuery() {
       const itemId = document.getElementById("itemId").value;
       const output = document.getElementById("output");
       output.innerHTML = '<pre>Loading...</pre>';
@@ -90,7 +45,7 @@
           body: JSON.stringify({ item_id: itemId })
         });
 
-        if (!res.ok) throw new Error("Backend connection failed");
+        if (!res.ok) throw new Error("Failed to connect to Flask backend");
 
         const data = await res.json();
 
@@ -122,9 +77,11 @@
 Item ID:              ${data.itemId}
 Total Quantity:       ${data.total_quantity}
 Multi-Signature (σ):  ${data.multi_signature}
+Commitment (t):       ${data.t}
+Hash H(t, m):         ${data.hash}
 Encrypted Quantity:   ${data.encrypted_quantity}
 Decrypted Quantity:   ${data.decrypted_quantity}
-Verification Result:  ${data.verification}
+Signature Verified:   ${data.verification ? "✅ Valid" : "❌ Invalid"}
 ✅ Query processed successfully.
           </pre>`;
       } catch (error) {
