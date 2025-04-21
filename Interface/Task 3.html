@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task 3: Multi-Signature Query</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background-color: #f7f7f7;
+    }
+    .container {
+      max-width: 600px;
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input, button {
+      padding: 10px;
+      margin: 10px 0;
+      width: 100%;
+      font-size: 1em;
+    }
+    pre {
+      background-color: #eef;
+      padding: 10px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🔐 Task 3 – Multi-Signature Query</h2>
+    <label for="itemId">Enter Item ID:</label>
+    <input type="text" id="itemId" placeholder="e.g., 004" />
+    <button onclick="simulateQuery()">Submit Query</button>
+
+    <h3>Results</h3>
+    <div id="output">
+      <pre>Waiting for input...</pre>
+    </div>
+  </div>
+
+  <script>
+    function simulateQuery() {
+      const itemId = document.getElementById('itemId').value;
+      const output = document.getElementById('output');
+      if (!itemId) {
+        output.innerHTML = '<pre>Please enter a valid Item ID.</pre>';
+        return;
+      }
+      // Simulate fixed result for demo
+      const result = {
+        itemId: itemId,
+        total_quantity: 60,
+        multi_signature: '0xA45F...D32C',
+        encrypted_quantity: '0xB78A...9911',
+        decrypted_quantity: 60
+      };
+      output.innerHTML = `<pre>
+Item ID Queried: ${result.itemId}
+Total Quantity: ${result.total_quantity}
+Multi-Signature: ${result.multi_signature}
+Encrypted Quantity: ${result.encrypted_quantity}
+Decrypted Quantity: ${result.decrypted_quantity}
+✅ Multi-signature query processed.
+</pre>`;
+    }
+  </script>
+</body>
+</html>
