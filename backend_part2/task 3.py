@@ -7,7 +7,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Load key data from file
-with open("all_keys.json") as f:
+with open("C:\\Users\\thaiv\\Downloads\\blockchain_inventory_final_with_keys\\backend_part2\\all_keys.json") as f:
     keys = json.load(f)
 
 inventories = keys["Inventories"]
