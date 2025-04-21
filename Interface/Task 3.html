@@ -7,67 +7,129 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 40px;
-      background-color: #f7f7f7;
+      background-color: #f5f7fa;
+      padding: 40px;
     }
     .container {
-      max-width: 600px;
-      background: white;
+      background-color: #fff;
+      max-width: 800px;
+      margin: auto;
       padding: 30px;
-      border-radius: 8px;
+      border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    input, button {
-      padding: 10px;
-      margin: 10px 0;
-      width: 100%;
-      font-size: 1em;
+    h2 {
+      text-align: center;
     }
-    pre {
+    input, button, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      font-size: 1em;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    pre, table {
       background-color: #eef;
       padding: 10px;
       border-radius: 5px;
       overflow-x: auto;
+      white-space: pre-wrap;
+    }
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #ddd;
     }
   </style>
 </head>
 <body>
+
   <div class="container">
     <h2>🔐 Task 3 – Multi-Signature Query</h2>
-    <label for="itemId">Enter Item ID:</label>
-    <input type="text" id="itemId" placeholder="e.g., 004" />
+    <label for="itemId">Select Item ID:</label>
+    <select id="itemId">
+      <option value="004">004</option>
+      <option value="005">005</option>
+      <option value="006">006</option>
+    </select>
     <button onclick="simulateQuery()">Submit Query</button>
 
-    <h3>Results</h3>
     <div id="output">
       <pre>Waiting for input...</pre>
     </div>
   </div>
 
   <script>
-    function simulateQuery() {
-      const itemId = document.getElementById('itemId').value;
-      const output = document.getElementById('output');
-      if (!itemId) {
-        output.innerHTML = '<pre>Please enter a valid Item ID.</pre>';
-        return;
+    async function simulateQuery() {
+      const itemId = document.getElementById("itemId").value;
+      const output = document.getElementById("output");
+      output.innerHTML = '<pre>Loading...</pre>';
+
+      try {
+        const res = await fetch("http://localhost:5000/query_item", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ item_id: itemId })
+        });
+
+        if (!res.ok) throw new Error("Backend connection failed");
+
+        const data = await res.json();
+
+        let inventoryRows = "";
+        data.details.forEach(inv => {
+          inventoryRows += `
+            <tr>
+              <td>${inv.inventory}</td>
+              <td>${inv.ID}</td>
+              <td>${inv.r}</td>
+              <td>${inv.quantity}</td>
+              <td>${inv.t_i}</td>
+              <td>${inv.s_i}</td>
+            </tr>`;
+        });
+
+        output.innerHTML = `
+          <h3>Inventory Breakdown</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Inventory</th><th>ID</th><th>r</th><th>Quantity</th><th>tᵢ</th><th>σᵢ</th>
+              </tr>
+            </thead>
+            <tbody>${inventoryRows}</tbody>
+          </table>
+          <h3>Results</h3>
+          <pre>
+Item ID:              ${data.itemId}
+Total Quantity:       ${data.total_quantity}
+Multi-Signature (σ):  ${data.multi_signature}
+Encrypted Quantity:   ${data.encrypted_quantity}
+Decrypted Quantity:   ${data.decrypted_quantity}
+Verification Result:  ${data.verification}
+✅ Query processed successfully.
+          </pre>`;
+      } catch (error) {
+        output.innerHTML = `<pre>Error: ${error.message}</pre>`;
       }
-      // Simulate fixed result for demo
-      const result = {
-        itemId: itemId,
-        total_quantity: 60,
-        multi_signature: '0xA45F...D32C',
-        encrypted_quantity: '0xB78A...9911',
-        decrypted_quantity: 60
-      };
-      output.innerHTML = `<pre>
-Item ID Queried: ${result.itemId}
-Total Quantity: ${result.total_quantity}
-Multi-Signature: ${result.multi_signature}
-Encrypted Quantity: ${result.encrypted_quantity}
-Decrypted Quantity: ${result.decrypted_quantity}
-✅ Multi-signature query processed.
-</pre>`;
     }
   </script>
 </body>
